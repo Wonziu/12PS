@@ -293,9 +293,9 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 433392434}
-  - component: {fileID: 433392435}
+  - component: {fileID: 433392436}
   m_Layer: 0
-  m_Name: Npc
+  m_Name: QuestGiver
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -314,7 +314,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &433392435
+--- !u!114 &433392436
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -322,22 +322,64 @@ MonoBehaviour:
   m_GameObject: {fileID: 433392433}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7d1e7be189d2f0d479fe36bfc16ca404, type: 3}
+  m_Script: {fileID: 11500000, guid: 73888129904191e43a4adc2afba4dc70, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  npcName: Grzegorz
   questManager: {fileID: 2013537107}
   dialogManager: {fileID: 382661146}
-  dialogs:
-  - onDialogEnd:
+  defaultEventDialog:
+    onDialogEnd:
       m_PersistentCalls:
-        m_Calls: []
+        m_Calls:
+        - m_Target: {fileID: 2013537107}
+          m_MethodName: OpenDoor
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
       m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
-    dialog: {fileID: 11400000, guid: b832201ede26d8049b1b75f3fc486f18, type: 2}
-    invokeEventOnce: 0
+    dialog: {fileID: 11400000, guid: d15cfdb7d897a744f933c740c324cf1f, type: 2}
+    invokeEventOnce: 1
     wasEventInvoked: 0
-    questId: 1
-  npcName: Grzegorz
+    questId: 0
+  eventDialogs: []
+  dialogs:
+  - dialog: {fileID: 11400000, guid: 994b4c9f9d5187547ab890256ffc6e24, type: 2}
+    questId: 0
+  questDialogs:
+  - StartEventDialog:
+      onDialogEnd:
+        m_PersistentCalls:
+          m_Calls: []
+        m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+      dialog: {fileID: 11400000, guid: 225854957991ad94891ca1b87a7a3295, type: 2}
+    CompleteEventDialog:
+      onDialogEnd:
+        m_PersistentCalls:
+          m_Calls:
+          - m_Target: {fileID: 2013537107}
+            m_MethodName: DeactivateQuest
+            m_Mode: 1
+            m_Arguments:
+              m_ObjectArgument: {fileID: 0}
+              m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+              m_IntArgument: 0
+              m_FloatArgument: 0
+              m_StringArgument: 
+              m_BoolArgument: 0
+            m_CallState: 2
+        m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+      dialog: {fileID: 11400000, guid: a593a47bfdd4bd34daf8b8bb6faf1116, type: 2}
+    quest: {fileID: 11400000, guid: 835c191ff5fc2ab4fa3b90a5ccc508a8, type: 2}
 --- !u!1 &862920192
 GameObject:
   m_ObjectHideFlags: 0
@@ -354,7 +396,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &862920193
 RectTransform:
   m_ObjectHideFlags: 0
@@ -779,4 +821,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1765b0913cb914489abd7f2d730dd4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  activeQuest: {fileID: 11400000, guid: 835c191ff5fc2ab4fa3b90a5ccc508a8, type: 2}
+  activeQuest: {fileID: 0}

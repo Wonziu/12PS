@@ -2,45 +2,39 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public struct Dialog 
-{
-    public UnityEvent onDialogEnd;
-    public DialogFile dialog;
-    public bool invokeEventOnce;
-    public bool wasEventInvoked;
-    public int questId;
-}
-
 public class Npc : Interactable
 {
+    public string npcName;
+
     public QuestManager questManager;
     public DialogManager dialogManager;
 
-    public List<Dialog> dialogs; // quest id and corresponding dialog, 0 for default dialog
-    public string npcName;
-
-    private void Start()
-    {
-        Interact();
-    }
+    public EventDialog defaultEventDialog; // quest id is redundand
+    public List<EventDialog> eventDialogs;
+    public List<Dialog> dialogs;
 
     public override void Interact()
     {
-        if (dialogs.Count == 0)
-            return;
-
         if (questManager.activeQuest != null)
         {
             var dialog = dialogs.Find(x => x.questId == questManager.activeQuest.id);
-            
-            if (!dialog.Equals(default(Dialog)))
+
+            if (dialog != null)
             {
-                dialogManager.StartDialog(dialog, npcName);              
+                dialogManager.StartDialog(dialog, npcName);
                 return;
             }
+
+            var newDialog = eventDialogs.Find(x => x.questId == questManager.activeQuest.id);
+
+            if (newDialog != null)
+            {
+                dialogManager.StartDialog(newDialog, npcName);
+                return;
+            }
+
         }
 
-        dialogManager.StartDialog(dialogs[0], npcName);
+        dialogManager.StartDialog(defaultEventDialog, npcName);
     }
 }

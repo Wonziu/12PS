@@ -8,11 +8,22 @@ public class QuestManager : MonoBehaviour
 
     public void Start()
     {
-        activeQuest.Init();
+
     }
 
     public void ActivateQuest(Quest quest)
     {        
         activeQuest = quest;
+        activeQuest.Init();
+    }
+
+    public void DeactivateQuest()
+    {
+        activeQuest = null;
+    }
+
+    public void OpenDoor()
+    {
+        Debug.Log("OPENED");
     }
 }   

@@ -56,7 +56,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void HideDialog()
+    public void ToggleDialog()
     {
         dialogParent.gameObject.SetActive(!dialogParent.gameObject.activeSelf);
     }

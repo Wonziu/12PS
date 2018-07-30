@@ -24,11 +24,11 @@ public class NodeEditor : EditorWindow
 
     private Vector2 _workSpace = new Vector2(2000, 2000);
 
-    [MenuItem("Window/Dialog Editor")]
+    [MenuItem("Window/EventDialog Editor")]
     public static void ShowDialog()
     {
         NodeEditor editor = GetWindow<NodeEditor>();
-        editor.titleContent = new GUIContent("Dialog Editor");
+        editor.titleContent = new GUIContent("EventDialog Editor");
     }
 
     private void OnEnable()
@@ -60,9 +60,9 @@ public class NodeEditor : EditorWindow
 
         GUI.EndScrollView();
 
-        if (_currentDialog.lines.Count == 0)
-            if (GUILayout.Button("Create New", GUILayout.Width(200), GUILayout.Height(30)))
-                ClearNodes();
+        if (_currentDialog == null || _currentDialog.lines.Count != 0) return;
+        if (GUILayout.Button("Create New", GUILayout.Width(200), GUILayout.Height(30)))
+            ClearNodes();
     }
 
     private void LoadDialog()
@@ -70,7 +70,6 @@ public class NodeEditor : EditorWindow
         if (Selection.activeObject && Selection.activeObject is DialogFile)
         {
             _currentDialog = (DialogFile)Selection.activeObject;
-            Debug.Log(_currentDialog.maxId);
         }
         else
         {
@@ -114,7 +113,6 @@ public class NodeEditor : EditorWindow
         DialogLine currentLine = _currentDialog.lines[windowId];
 
         currentLine.text = GUI.TextArea(new Rect(0, 15, 150, 85), currentLine.text);
-
 
         if (GUI.Button(new Rect(0, 100, 20, 20), "-"))
             RemoveNode();
@@ -161,6 +159,28 @@ public class NodeEditor : EditorWindow
         Handles.DrawBezier(startPos, endPos, startTan, endTan, color, null, 4);
     }
 
+    private void SetNodesId()
+    {
+        Dictionary<int, int> newIds = new Dictionary<int, int>();
+
+        int index = 0;
+        foreach (var line in _currentDialog.lines)
+        {
+            newIds.Add(line.id, index);
+            index++;
+        }
+
+        foreach (var line in _currentDialog.lines)
+        {
+            line.id = newIds[line.id];
+
+            for (var i = 0; i < line.choices.Count; i++)
+            {               
+                line.choices[i] = newIds[line.choices[i]];
+            }
+        }
+    }
+
     private void DrawNodes()
     {
         int windowsIndex = 0;
@@ -174,7 +194,7 @@ public class NodeEditor : EditorWindow
                     _currentDialog.lines.Find(x => x.id == line).type = NodeType.Option;
 
             string style = "flow node 1";
-            string boxName = dialogLine.choices.Count == 0 ? "End (Dialog)" : "Dialog";
+            string boxName = dialogLine.choices.Count == 0 ? "End (EventDialog)" : "EventDialog";
             switch (dialogLine.type)
             {
                 case NodeType.Start:
@@ -191,6 +211,8 @@ public class NodeEditor : EditorWindow
                     break;
             }
 
+            boxName = dialogLine.id.ToString();
+
             GUIStyle finalStyle = new GUIStyle(style)
             {
                 fontSize = 14,
@@ -206,9 +228,11 @@ public class NodeEditor : EditorWindow
 
     private void CreateNode()
     {
+        SetNodesId();
+
         DialogLine newLine = new DialogLine
         {
-            id = ++_currentDialog.maxId,
+            id = _currentDialog.lines.Count ,
             type = NodeType.Default,
             text = "Sample text",
             rect = _currentDialog.lines[_selectedNodeId].rect
@@ -342,7 +366,6 @@ public class NodeEditor : EditorWindow
     private void ClearNodes()
     {
         _currentDialog.lines.Clear();
-        _currentDialog.maxId = 0;
 
         CreateFirstNode();
     }

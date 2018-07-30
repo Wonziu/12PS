@@ -11,8 +11,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1ebfc86c022f264f852036b814d61ea, type: 3}
   m_Name: FirstQuest
   m_EditorClassIdentifier: 
-  id: 1
+  id: 0
   description: "Zr\xF3b zadanie dla Grzegorza"
-  completed: 0
+  completed: 1
   goals:
   - {fileID: 11400000, guid: 9ce189c93deab00469a8002b08f5dc0a, type: 2}

@@ -1,40 +1,69 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class DialogManager : MonoBehaviour
 {
     public UIManager uiManager;
 
+    private bool _invokeEvent;
     private int _currentId;
     private string _npcName;
-    private Dialog _currentDialog;
+    private DialogFile _currentDialog;
+    private UnityEvent _dialogEvent;
 
-    public void StartDialog(Dialog d, string name)
+    public void StartDialog(EventDialog e, string npcName)
     {
-        foreach (var dialogLine in d.dialog.lines)
-            _currentDialog = d;
-
         ResetDialog();
-        _npcName = name;
 
-        uiManager.DisplayDialog(_npcName, _currentDialog.dialog.lines[0]);
+        _currentDialog = e.dialog;
+
+        if (e.onDialogEnd != null)
+        {
+            _invokeEvent = !(e.invokeEventOnce && e.wasEventInvoked);
+
+            if (_invokeEvent)
+            {
+                _dialogEvent = e.onDialogEnd;
+                e.wasEventInvoked = true;
+            }
+        }
+
+        SetDialog(npcName);
     }
 
-    public void OpenDoor()
+    public void StartDialog(QuestDialog q, string npcName)
     {
-        Debug.Log("Opened");
+        ResetDialog();
+
+        _currentDialog = q.dialog;
+
+        _dialogEvent = q.onDialogEnd;
+        _invokeEvent = true;
+
+        SetDialog(npcName);
+    }
+
+    public void StartDialog(Dialog d, string npcName)
+    {
+        ResetDialog();
+
+        _currentDialog = d.dialog;
+        _invokeEvent = false;
+
+        SetDialog(npcName);
     }
 
     public DialogLine[] GetChoices()
     {
-        if (_currentDialog.dialog.lines[_currentId].type != NodeType.Choice)
+        if (_currentDialog.lines[_currentId].type != NodeType.Choice)
             return new DialogLine[] { };
 
         List<DialogLine> choices = new List<DialogLine>();
 
-        foreach (int id in _currentDialog.dialog.lines[_currentId].choices)
-            choices.Add(_currentDialog.dialog.lines[id]);
+        foreach (int id in _currentDialog.lines[_currentId].choices)
+            choices.Add(_currentDialog.lines[id]);
 
         return choices.ToArray();
     }
@@ -43,26 +72,32 @@ public class DialogManager : MonoBehaviour
     {
         if (id == -1)
         {
-            if (!(_currentDialog.invokeEventOnce && _currentDialog.wasEventInvoked) && _currentDialog.onDialogEnd != null)
-            {
-                _currentDialog.onDialogEnd.Invoke();
-                _currentDialog.wasEventInvoked = true;
-            }
+            if (_invokeEvent)
+                _dialogEvent.Invoke();
 
-            uiManager.HideDialog();
+            uiManager.ToggleDialog();
             return;
         }
 
         _currentId = id;
 
         if (GetChoices().Length == 0)
-            uiManager.DisplayDialog(_npcName, _currentDialog.dialog.lines[_currentId]);
+            uiManager.DisplayDialog(_npcName, _currentDialog.lines[_currentId]);
         else
-            uiManager.DisplayChoice(_npcName, _currentDialog.dialog.lines[_currentId], GetChoices());
+            uiManager.DisplayChoice(_npcName, _currentDialog.lines[_currentId], GetChoices());
+    }
+
+    private void SetDialog(string s)
+    {
+        _npcName = s;
+
+        uiManager.ToggleDialog();
+        uiManager.DisplayDialog(_npcName, _currentDialog.lines[0]);
     }
 
     private void ResetDialog()
     {
         _currentId = 0;
+        _dialogEvent = null;
     }
 }
