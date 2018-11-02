@@ -21,9 +21,4 @@ public class QuestManager : MonoBehaviour
     {
         activeQuest = null;
     }
-
-    public void OpenDoor()
-    {
-        Debug.Log("OPENED");
-    }
 }   

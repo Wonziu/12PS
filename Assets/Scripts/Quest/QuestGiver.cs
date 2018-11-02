@@ -7,7 +7,7 @@ public class QuestGiver : Npc
     public List<QuestInformation> questDialogs;
     private Queue<QuestInformation> questDialogsQueue;
 
-    private bool givenQuest;
+    private bool _givenQuest;
 
     private void Awake()
     {
@@ -24,34 +24,24 @@ public class QuestGiver : Npc
         questDialogs.Clear();
     }
 
-    public void Update()
-    {
-        if(Input.GetKeyDown(KeyCode.E))
-            Interact();
-        else if (Input.GetKeyDown(KeyCode.W))
-            questManager.activeQuest.completed = true;
-    }
-
     public override void Interact()
     {
-        if (!givenQuest && questDialogsQueue.Count > 0) 
+        if (!_givenQuest && questDialogsQueue.Count > 0) 
         {
             questManager.ActivateQuest(questDialogsQueue.Peek().quest);
             dialogManager.StartDialog(questDialogsQueue.Peek().StartEventDialog, npcName);
             
-            givenQuest = true;
+            _givenQuest = true;
         }
-        else if (!QuestCompleted())
-        {
-            
+        else if (!QuestCompleted())      
             base.Interact();
-        }
+
         else
         {
             questManager.DeactivateQuest();
             dialogManager.StartDialog(questDialogsQueue.Peek().CompleteEventDialog, npcName);
 
-            givenQuest = false;
+            _givenQuest = false;
             questDialogsQueue.Dequeue();
         }
 
